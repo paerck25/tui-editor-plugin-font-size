@@ -23,6 +23,6 @@ import "tui-editor-plugin-font-size/dist/tui-editor-plugin-font-size.css";
 
 const editor = new Editor({
   // ...
-  plugins: [colorSyntax],
+  plugins: [fontSize],
 });
 ```
