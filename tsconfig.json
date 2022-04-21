@@ -1,0 +1,28 @@
+{
+  "include": ["src/**/*.ts", "src/**/*.js", "types/**/*"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "target": "es5",
+    "module": "es6",
+    "allowJs": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@t/*": ["types/*"]
+    },
+    "typeRoots": [
+      "./types",
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ],
+    "lib": ["esnext", "dom", "dom.iterable"]
+  }
+}

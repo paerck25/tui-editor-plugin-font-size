@@ -1,0 +1,16 @@
+.drop-down-item {
+    user-select: none;
+    padding: 6px 18px;
+}
+
+.drop-down-item:hover {
+    background-color: #ebedef;
+}
+
+.size-input {
+    width: 100%;
+    border: 1px solid #ebedef;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 8px;
+}
