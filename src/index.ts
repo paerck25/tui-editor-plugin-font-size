@@ -105,8 +105,8 @@ export default function fontSizePlugin(
             slice.content.size,
             "\n"
           );
-          const openTag = `<div style="font-size: ${fontSize}; display:inline-block;">`;
-          const closeTag = `</div>`;
+          const openTag = `<span style="font-size: ${fontSize};">`;
+          const closeTag = `</span>`;
           const fontSized = `${openTag}${textContent}${closeTag}`;
 
           tr.replaceSelectionWith(schema.text(fontSized)).setSelection(
@@ -132,10 +132,10 @@ export default function fontSizePlugin(
           const { from, to } = selection;
           const attrs = {
             htmlAttrs: {
-              style: `font-size: ${fontSize}; display:inline-block;`,
+              style: `font-size: ${fontSize};`,
             },
           };
-          const mark = schema.marks.div.create(attrs);
+          const mark = schema.marks.span.create(attrs);
 
           tr.addMark(from, to, mark);
           dispatch!(tr);
@@ -154,14 +154,14 @@ export default function fontSizePlugin(
     ],
     toHTMLRenderers: {
       htmlInline: {
-        div(node: HTMLMdNode, { entering }: any) {
+        span(node: HTMLMdNode, { entering }: any) {
           return entering
             ? {
                 type: "openTag",
-                tagName: "div",
+                tagName: "span",
                 attributes: node.attrs!,
               }
-            : { type: "closeTag", tagName: "div" };
+            : { type: "closeTag", tagName: "span" };
         },
       },
     },
