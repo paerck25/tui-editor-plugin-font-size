@@ -38,8 +38,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_AUTH_TOKEN }}
         with:
-          tag_name: ${{ steps.check.outputs.committed-version }}
-          release_name: ${{ steps.check.outputs.committed-version }}
+          tag_name: v${{ steps.check.outputs.committed-version }}
+          release_name: v${{ steps.check.outputs.committed-version }}
           body: ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
