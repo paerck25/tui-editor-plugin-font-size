@@ -1,6 +1,6 @@
 import type { PluginContext, PluginInfo, HTMLMdNode } from "@toast-ui/editor";
 import type { Transaction, Selection, TextSelection } from "prosemirror-state";
-import { PluginOptions } from "@t/index";
+import { Attr, Mark, PluginOptions } from "@t/index";
 import "./css/plugin.css";
 
 const FONT_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 24, 30, 36, 48, 60, 72, 96];
@@ -56,6 +56,40 @@ function createSelection(
     : SelectionClass.create(doc, mappedFrom, mappedTo);
 }
 
+const getSpanAttrs = (selection: Selection) => {
+  const slice = selection.content();
+  let attrs: Attr = {
+    htmlAttrs: null,
+    htmlInline: null,
+    classNames: null,
+  };
+  slice.content.nodesBetween(0, slice.content.size, (node: any) => {
+    if (node.marks.length > 0) {
+      node.marks.forEach((mark: Mark) => {
+        if (mark.type.name === "span") {
+          attrs = mark.attrs;
+        }
+      });
+    }
+  });
+  return attrs;
+};
+
+const assignFontSize = (prevStyle: string, fontSize: string) => {
+  if (prevStyle.includes("font-size")) {
+    const styles = prevStyle.split(";");
+    const newStyle = styles.map((style) => {
+      if (style.includes("font-size")) {
+        return `font-size: ${fontSize}`;
+      }
+      return style;
+    });
+
+    return newStyle.join(";");
+  }
+  return `font-size: ${fontSize}; ${prevStyle}`;
+};
+
 export default function fontSizePlugin(
   context: PluginContext,
   options: PluginOptions = {}
@@ -105,6 +139,7 @@ export default function fontSizePlugin(
             slice.content.size,
             "\n"
           );
+
           const openTag = `<span style="font-size: ${fontSize};">`;
           const closeTag = `</span>`;
           const fontSized = `${openTag}${textContent}${closeTag}`;
@@ -130,11 +165,28 @@ export default function fontSizePlugin(
       fontSize: ({ fontSize }, { tr, selection, schema }, dispatch) => {
         if (fontSize) {
           const { from, to } = selection;
-          const attrs = {
-            htmlAttrs: {
-              style: `font-size: ${fontSize};`,
-            },
-          };
+
+          const prevAttrs = getSpanAttrs(selection);
+
+          const style = assignFontSize(
+            prevAttrs.htmlAttrs?.["style"] || "",
+            fontSize
+          );
+
+          const attrs = prevAttrs
+            ? {
+                ...prevAttrs,
+                htmlAttrs: {
+                  ...prevAttrs.htmlAttrs,
+                  style: style,
+                },
+              }
+            : {
+                htmlAttrs: {
+                  style: `font-size: ${fontSize};`,
+                },
+              };
+
           const mark = schema.marks.span.create(attrs);
 
           tr.addMark(from, to, mark);
