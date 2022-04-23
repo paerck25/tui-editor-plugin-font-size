@@ -1,6 +1,6 @@
 # tui-editor-plugin-font-size
 
-This is a plugin of [TOAST UI Editor](https://github.com/nhn/tui.editor/tree/master/apps/editor) to size editing text.<br>
+This is a plugin of [TOAST UI Editor](https://github.com/nhn/tui.editor/tree/master/apps/editor) to font size editing text.<br>
 based on [@toast-ui/editor-plugin-color-syntax](https://github.com/nhn/tui.editor/tree/master/plugins/color-syntax)
 
 ![font-size](./readme_img.png)
