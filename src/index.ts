@@ -1,6 +1,7 @@
 import type { PluginContext, PluginInfo, HTMLMdNode } from "@toast-ui/editor";
 import type { Transaction, Selection, TextSelection } from "prosemirror-state";
-import { Attr, Mark, PluginOptions } from "@t/index";
+import type { Attr, Mark, PluginOptions } from "@t/index";
+import type { Context } from "@toast-ui/editor/types/toastmark";
 import "./css/plugin.css";
 
 const FONT_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 24, 30, 36, 48, 60, 72, 96];
@@ -90,11 +91,48 @@ const assignFontSize = (prevStyle: string, fontSize: string) => {
   return `font-size: ${fontSize}; ${prevStyle}`;
 };
 
+function hasClass(element: HTMLElement, className: string) {
+  return element.classList.contains(className);
+}
+
+export function findParentByClassName(el: HTMLElement, className: string) {
+  let currentEl: HTMLElement | null = el;
+
+  while (currentEl && !hasClass(currentEl, className)) {
+    currentEl = currentEl.parentElement;
+  }
+
+  return currentEl;
+}
+
+function getCurrentEditorEl(
+  colorPickerEl: HTMLElement,
+  containerClassName: string
+) {
+  const editorDefaultEl = findParentByClassName(
+    colorPickerEl,
+    `toastui-editor-defaultUI`
+  )!;
+
+  return editorDefaultEl.querySelector<HTMLElement>(
+    `.${containerClassName} .ProseMirror`
+  )!;
+}
+
+let containerClassName: string;
+let currentEditorEl: HTMLElement;
+
 export default function fontSizePlugin(
   context: PluginContext,
   options: PluginOptions = {}
 ): PluginInfo {
   const { eventEmitter, pmState } = context;
+
+  eventEmitter.listen("focus", (editType) => {
+    containerClassName = `toastui-editor-${
+      editType === "markdown" ? "md" : "ww"
+    }-container`;
+  });
 
   const container = document.createElement("div");
 
@@ -103,17 +141,25 @@ export default function fontSizePlugin(
   inputForm.onsubmit = (ev) => {
     ev.preventDefault();
     const input = inputForm.querySelector(".size-input") as HTMLInputElement;
+    currentEditorEl = getCurrentEditorEl(container, containerClassName);
+
     eventEmitter.emit("command", "fontSize", {
       fontSize: input.value + "px",
     });
     eventEmitter.emit("closePopup");
+
+    currentEditorEl.focus();
   };
 
   container.appendChild(inputForm);
 
   function onClickDropDown(fontSize: string) {
+    currentEditorEl = getCurrentEditorEl(container, containerClassName);
+
     eventEmitter.emit("command", "fontSize", { fontSize });
     eventEmitter.emit("closePopup");
+
+    currentEditorEl.focus();
   }
 
   const dropDown = creaetFontSizeDropDown();
@@ -206,7 +252,7 @@ export default function fontSizePlugin(
     ],
     toHTMLRenderers: {
       htmlInline: {
-        span(node: HTMLMdNode, { entering }: any) {
+        span(node: HTMLMdNode, { entering }: Context) {
           return entering
             ? {
                 type: "openTag",
