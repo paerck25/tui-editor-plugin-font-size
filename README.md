@@ -15,7 +15,7 @@ or
 $ yarn add tui-editor-plugin-font-size
 ```
 
-### Useage
+### Usage
 
 ```js
 import Editor from "@toast-ui/editor";
