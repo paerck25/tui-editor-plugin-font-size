@@ -219,9 +219,8 @@ export default function fontSizePlugin(
             fontSize
           );
 
-          const attrs = prevAttrs
+          const attrs = prevAttrs.htmlAttrs
             ? {
-                ...prevAttrs,
                 htmlAttrs: {
                   ...prevAttrs.htmlAttrs,
                   style: style,
